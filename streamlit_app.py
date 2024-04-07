@@ -1,15 +1,25 @@
 import streamlit as st
 from transformers import pipeline
 
-st.title('Translate Chinese to English')
+# Load the language model
+model = pipeline("text-generation", model="openai-gpt")
 
-translator = pipeline("translation", model="Helsinki-NLP/opus-mt-zh-en")
 
-text_to_translate = st.text_area("Please type input: (Example: 你好，很高兴认识你)", value='', height=250, max_chars=500)
+# Define Streamlit app
+def main():
+    st.title("Language Model Deployment with Streamlit")
+    text_input = st.text_area("Enter text to generate continuation:")
 
-if st.button('Translate'):
-    if text_to_translate:
-        translation = translator(text_to_translate, max_length=400)[0]['translation_text']
-        st.write("Translated result:", translation)
-    else:
-        st.write("Please enter some text to translate.")
+    if st.button("Generate"):
+        if text_input:
+            generated_text = model(text_input, max_length=50, do_sample=True)[0][
+                "generated_text"
+            ]
+            st.write("Generated Text:")
+            st.write(generated_text)
+        else:
+            st.warning("Please enter some text first.")
+
+
+if __name__ == "__main__":
+    main()
